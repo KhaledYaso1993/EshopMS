@@ -4,6 +4,19 @@ public record UpdateProductCommand(Guid Id, string Name, List<string> Category, 
 
 public record UpdateProductResult(bool IsSuccess);
 
+public class UpdateProductCommandValiditor : AbstractValidator<UpdateProductCommand>
+{
+    public UpdateProductCommandValiditor()
+    {
+        RuleFor(x => x.Id).NotEmpty().WithMessage("Id is required");
+
+        RuleFor(x => x.Name).NotEmpty().WithMessage("Name is required")
+            .Length(2, 150).WithMessage("Name must be between 2 to 150 characters");
+        RuleFor(x => x.Price).GreaterThan(0).WithMessage("Price must be Greater Than zero");
+
+    }
+
+}
 internal class UpdateProductCommandHandler
     (IDocumentSession session, ILogger<UpdateProductCommandHandler> logger)
     : IQueryHandler<UpdateProductCommand, UpdateProductResult>
@@ -18,14 +31,14 @@ internal class UpdateProductCommandHandler
         {
             throw new ProductNotFoundException();
         }
-        
+
         product.Name = command.Name;
         product.Category = command.Category;
         product.Description = command.Description;
         product.ImageFile = command.ImageFile;
         product.Price = command.Price;
-        
-        session.Update(product);    
+
+        session.Update(product);
         await session.SaveChangesAsync(cancellationToken);
 
         return new UpdateProductResult(true);

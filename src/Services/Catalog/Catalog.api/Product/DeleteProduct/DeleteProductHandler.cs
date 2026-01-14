@@ -1,14 +1,19 @@
-﻿
-using Catalog.api.Product.UpdateProduct;
-using JasperFx.Events.Daemon;
-
-namespace Catalog.api.Product.DeleteProduct;
+﻿namespace Catalog.api.Product.DeleteProduct;
 
 
 public record DeleteProductCommand(Guid Id) : ICommand<DeleteProductResult>;
 
 public record DeleteProductResult(bool IsSuccess);
 
+public class DeleteProductCommandValiditor : AbstractValidator<DeleteProductCommand>
+{
+    public DeleteProductCommandValiditor()
+    {
+        RuleFor(x => x.Id).NotEmpty().WithMessage("Id is required");
+
+    }
+
+}
 internal class DeleteProductCommandHandler
     (IDocumentSession session, ILogger<DeleteProductCommandHandler> logger)
     : ICommandHandler<DeleteProductCommand, DeleteProductResult>
