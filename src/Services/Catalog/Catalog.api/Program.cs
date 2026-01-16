@@ -1,7 +1,3 @@
-
-using BuildingBlocks.Behaviors;
-using FluentValidation;
-
 var builder = WebApplication.CreateBuilder(args);
 var assembly = typeof(Program).Assembly;
 //Add services to the container 
@@ -17,9 +13,12 @@ builder.Services.AddCarter();
 
 builder.Services.AddMarten(opt => opt.Connection(builder.Configuration.GetConnectionString("Database")!));
 
+builder.Services.AddExceptionHandler<CustomExceptionHandler>();
 var app = builder.Build();
 //configure the Http request Pipline 
 
 app.MapCarter();
+
+app.UseExceptionHandler(options => { });
 
 app.Run();
