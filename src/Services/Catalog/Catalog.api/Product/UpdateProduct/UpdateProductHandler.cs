@@ -1,6 +1,6 @@
 ﻿namespace Catalog.api.Product.UpdateProduct;
 
-public record UpdateProductCommand(Guid Id, string Name, List<string> Category, string Description, string ImageFile, decimal Price) : IQuery<UpdateProductResult>;
+public record UpdateProductCommand(Guid Id, string Name, List<string> Category, string Description, string ImageFile, decimal Price) : ICommand<UpdateProductResult>;
 
 public record UpdateProductResult(bool IsSuccess);
 
@@ -18,12 +18,11 @@ public class UpdateProductCommandValiditor : AbstractValidator<UpdateProductComm
 
 }
 internal class UpdateProductCommandHandler
-    (IDocumentSession session, ILogger<UpdateProductCommandHandler> logger)
-    : IQueryHandler<UpdateProductCommand, UpdateProductResult>
+    (IDocumentSession session)
+    : ICommandHandler<UpdateProductCommand, UpdateProductResult>
 {
     public async Task<UpdateProductResult> Handle(UpdateProductCommand command, CancellationToken cancellationToken)
     {
-        logger.LogInformation("UpdateProductCommandHandler.Handle Called With {@Command}", command);
 
         var product = await session.LoadAsync<Catalog.api.Models.Product>(command.Id, cancellationToken);
 
